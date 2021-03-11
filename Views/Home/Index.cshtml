@@ -1,0 +1,92 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+
+<div class="row" style="margin-top: 10px">
+	<p class="col-sm-2"><button id="insert-data-btn" class="btn btn-primary btn-sm">Insert Data</button></p>
+</div>
+
+
+<div class="row">
+	<div class="col-sm-4">
+		<input class="form-control" placeholder="Key search" id="search-value" required />
+	</div>
+	<div class="col-sm-2">
+		<p><button id="search-substring-btn" class="btn btn-primary btn-sm">Search</button></p>
+	</div>
+</div>
+
+<div class="row" style="margin-top: 10px;" id="search-result">
+	@{
+		Html.RenderPartial("PagingStringMatch"); 
+	}
+</div>
+
+@section scripts {
+
+	<script type="text/javascript">
+		var pageIndex = 1;
+		var pageSize = 200;
+
+		$('#insert-data-btn').on("click", function () {
+			$.ajax({
+				url: '@Url.Action("InsertData", "Home")',
+				type: 'POST',
+				success: function (res) {
+					if (res?.isSuccess === true) {
+						alert('success');
+					} else {
+						alert(res.message);
+					}
+				},
+				error: function (resp){
+					return console.log(resp);
+				}
+            });
+        });
+
+		$('#search-substring-btn').on("click", function () {
+			var searchValue = $('#search-value').val();
+			if (searchValue == "") {
+				return;
+			}
+			$("#search-result").html("");
+			var formData = { searchValue: searchValue, pageIndex: pageIndex, pageSize: pageSize };
+			resultPaging(formData);
+		});
+
+		function next(page) {
+			var formData = { searchValue: $('#search-value').val(), pageIndex: page, pageSize: pageSize };
+			resultPaging(formData);
+		}
+
+		function previous(page) {
+			var formData = { searchValue: $('#search-value').val(), pageIndex: page, pageSize: pageSize };
+			resultPaging(formData);
+		}
+
+		$("#search-value").keydown(function (e) {
+			if (e.which == 13 && $('#search-value').val() !== "") {
+				var formData = { searchValue: $('#search-value').val(), pageIndex: 1, pageSize: pageSize };
+				resultPaging(formData);
+			}
+		});
+
+		function resultPaging(formData) {
+			$.ajax({
+				url: '@Url.Action("Search", "Home")',
+				data: formData,
+				type: 'post',
+				success: function (resp) {
+					$("#search-result").html(resp);
+				},
+				error: function (resp) {
+					return console.log(resp);
+				}
+			});
+		}
+	</script>
+}
+
+

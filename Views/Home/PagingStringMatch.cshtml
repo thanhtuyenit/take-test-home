@@ -1,0 +1,67 @@
+﻿
+@model Take_home_test.Models.ResponseModel
+@{
+	ViewData["Title"] = "PagingStringMatch";
+}
+<style>
+	table {
+		width: 500px;
+		table-layout: fixed;
+	}
+
+	td {
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+	}
+</style>
+<table class="col-sm-12 table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">ID String</th>
+			<th scope="col" style="width:50%">Content String</th>
+			<th scope="col">Match times</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (Model?.IsSuccess == true && Model.Data?.Count() > 0)
+		{
+			@foreach (var item in Model.Data)
+			{
+				<tr>
+					<th scope="row">@item.ID</th>
+					<td style="width:50%">@item.Content</td>
+					<td>@item.ExistTime</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="3">Data not found.</td>
+			</tr>
+		}
+	</tbody>
+</table>
+<div class="row">
+
+	@if (Model?.IsSuccess == true && Model?.Paging?.PageIndex > 1)
+	{
+		<div>
+			<button id="previous-btn" class="btn btn-default" onclick="previous(@Model.Paging.PageIndex - 1)">
+				&laquo; Prev
+			</button>
+		</div>
+	}
+	@if (Model?.IsSuccess == true && Model?.Paging?.PageIndex < Model?.Paging?.PageTotal)
+	{
+		<div>
+			<button id="next-btn" class="btn btn-default" onclick="next(@Model.Paging.PageIndex + 1)">
+				Next &raquo;
+			</button>
+		</div>
+	}
+</div>
+
+
+
+
